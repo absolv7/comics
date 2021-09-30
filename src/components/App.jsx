@@ -1,7 +1,8 @@
 import '../App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ShowCharacters from './ShowCharacters';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 //peticiones : https://gateway.marvel.com:443/v1/public/characters?apikey=653abf6748c3bb17cbffa7f7d4336367
 
@@ -18,11 +19,28 @@ const App = () => {
 
     const [heros, setHeros] = useState([]);
 
-    const link = 'https://gateway.marvel.com:443/v1/public/characters?ts=1&apikey=653abf6748c3bb17cbffa7f7d4336367&hash=86548f0fbf01bf063246e4b956858476';
+    const [busqueda, setBusqueda] = useState('captain');
+
+    const [link, setLink] = useState(`https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=${busqueda}&ts=1&apikey=653abf6748c3bb17cbffa7f7d4336367&hash=86548f0fbf01bf063246e4b956858476`);
 
     useEffect(() => {
         getHeros();
     }, [])
+
+    const busq = (event) => {
+        console.log('event: ',event.target.value);
+        setBusqueda(event.target.value);
+        console.log('busqueda: ',busqueda);
+        console.log('link: ', link);
+        setLink(`https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=${busqueda}&ts=1&apikey=653abf6748c3bb17cbffa7f7d4336367&hash=86548f0fbf01bf063246e4b956858476`)
+        getHeros();
+    }
+
+    const submitEvent = (event) => {
+        event.preventDefault();
+        setBusqueda(event.target.value);
+
+    }
 
     const getHeros = async () => {
         const response = await axios.get(link);
@@ -30,21 +48,20 @@ const App = () => {
         setHeros(herosResponse);
     }
 
-
     return (
-        <div className="row row-cols-1 row-cols-md-3 g4">
-            {heros.map((hero) => (
-                <div className="col">
-                    <div className="card" style={{width:"17rem",height:"17rem"}}>
-                        <img src={`${hero.thumbnail.path}.${hero.thumbnail.extension}`} alt="" style={{width:"100%",height:"100%"
-                        }} className="card-img-top"/>
-                    </div>
-                    <div className="card-body">
-                        <p className="card-text">{hero.name}</p>
-                    </div>
-                </div>
-            ))}
+        <div className="container">
+
+            <nav class="navbar navbar-light bg-light justify-content-between">
+                <a class="navbar-brand" href="/">Navbar</a>
+                <form class="form-inline">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" onChange={busq}/>
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit" onClick={submitEvent}>Search</button>
+                </form>
+            </nav>
+
+            <ShowCharacters heros={heros}/>
         </div>
+        
     )
 }
 
