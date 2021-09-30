@@ -43,8 +43,6 @@ const Characters = () => {
 
     return (
         <div className="container">
-
-            
             <Navigation search={search} />
             <ShowCharacters heros={heros}/>
         </div>
